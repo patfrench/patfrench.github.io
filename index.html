@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dynamic Tabs</title>
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- CodeMirror CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.css">
+        <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+        <script src="./mini-coi.js" scope="./"></script>
+
+        <style>
+            .scrollable-list {
+                max-height: 200px; /* Ajustez la hauteur maximale selon vos besoins */
+                overflow-y: auto; /* Ajoute une barre de défilement vertical si nécessaire */
+            }
+
+            .btn-left {
+                margin-right: 20px; /* Espace entre les boutons si nécessaire */
+            
+            }
+
+            .navbar-toggler {
+                margin-left: auto; /* Déplace le bouton de bascule du menu à droite */
+
+            }
+
+            .custom-navbar {
+                background-color: #edf2f9; /* Dark color for the footer */
+            }
+
+            /* Ajout de bordure entre les deux colonnes */
+            #col-milieu {
+                border-right: 1px solid red; /* Couleur rouge pour la bordure droite */
+                padding-right: 15px; /* Ajout de padding à droite pour dégager la bordure */
+                height: 100%;
+            }
+
+            #col-gauche,
+            #col-droite {
+                height: 100%;
+                background-color: #edf2f9; /* Dark color for the footer */
+            }
+
+            /* Style pour les onglets du footer */
+            .nav-tabs {
+                border-bottom: 1px solid #454d55; /* Darker border color */
+            }
+
+            .nav-tabs .nav-link {
+                color: white; /* Text color for the tabs */
+                background-color: #343a40; /* Dark color for the tabs */
+                border: 1px solid #454d55; /* Darker border color */
+                border-radius: 0;
+            }
+
+            .nav-tabs .nav-link.active {
+                color: #343a40; /* Text color for the active tab */
+                background-color: white; /* Light color for the active tab */
+                border: 1px solid #454d55; /* Darker border color */
+                border-bottom-color: transparent; /* Hide bottom border for active tab */
+            }
+
+            /* Style pour le footer fixé en bas de la page */
+            footer {
+                background-color: #edf2f9; /* Dark color for the footer */
+                color: white; /* Text color for the footer */
+                padding: 10px 0;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+            }
+
+            .form-control {
+                height: 500px; /* ajustez la hauteur selon vos besoins */
+            }
+
+            /* Ajout de padding entre le header et le body */
+            body {
+                padding-top: 80px; /* Ajustez la valeur en fonction de la hauteur de votre header */
+                padding-bottom : 10px
+            }
+
+        </style>
+
+    </head>
+
+
+
+    <body>
+        <header>
+            <div class="container-fluid">
+                <nav class="navbar navbar-light custom-navbar fixed-top">
+                    <div class="container-fluid">
+
+                        <button type="button" class="btn btn-primary btn-left" id="NOUVEAU" data-toggle="tooltip" data-placement="bottom" title="New">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-plus-fill" viewBox="0 0 16 16">
+                                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M8.5 7v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 1 0"></path>
+                            </svg>    
+                        </button>
+
+
+                        <button type="button" class="btn btn-primary btn-left" id="OPEN" data-toggle="tooltip" data-placement="bottom" title="Open">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder2-open" viewBox="0 0 16 16">
+                                <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"></path>
+                            </svg>   
+                        </button>
+
+                        <button type="button" class="btn btn-primary btn-left" id="SAVE" data-toggle="tooltip" data-placement="bottom" title="Save as">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy" viewBox="0 0 16 16">
+                                <path d="M11 2H9v3h2z"></path>
+                                <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z"></path>
+                            </svg>  
+                        </button>
+
+                        <button type="button" class="btn btn-success btn-left" id="RUN" data-toggle="tooltip" data-placement="bottom" title="Run">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-btn" viewBox="0 0 16 16">
+                                <path d="M6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"></path>
+                                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"></path>
+                            </svg>       
+                        </button>
+
+                        <button type="button" class="btn btn-outline-danger btn-left" id="STOP" data-toggle="tooltip" data-placement="bottom" title="Reset">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sign-stop-fill" viewBox="0 0 16 16">
+                                <path d="M10.371 8.277v-.553c0-.827-.422-1.234-.987-1.234-.572 0-.99.407-.99 1.234v.553c0 .83.418 1.237.99 1.237.565 0 .987-.408.987-1.237m2.586-.24c.463 0 .735-.272.735-.744s-.272-.741-.735-.741h-.774v1.485h.774"></path>
+                                <path d="M4.893 0a.5.5 0 0 0-.353.146L.146 4.54A.5.5 0 0 0 0 4.893v6.214a.5.5 0 0 0 .146.353l4.394 4.394a.5.5 0 0 0 .353.146h6.214a.5.5 0 0 0 .353-.146l4.394-4.394a.5.5 0 0 0 .146-.353V4.893a.5.5 0 0 0-.146-.353L11.46.146A.5.5 0 0 0 11.107 0zM3.16 10.08c-.931 0-1.447-.493-1.494-1.132h.653c.065.346.396.583.891.583.524 0 .83-.246.83-.62 0-.303-.203-.467-.637-.572l-.656-.164c-.61-.147-.978-.51-.978-1.078 0-.706.597-1.184 1.444-1.184.853 0 1.386.475 1.436 1.087h-.645c-.064-.32-.352-.542-.797-.542-.472 0-.77.246-.77.6 0 .261.196.437.553.522l.654.161c.673.164 1.06.487 1.06 1.11 0 .736-.574 1.228-1.544 1.228Zm3.427-3.51V10h-.665V6.57H4.753V6h3.006v.568H6.587Zm4.458 1.16v.544c0 1.131-.636 1.805-1.661 1.805-1.026 0-1.664-.674-1.664-1.805V7.73c0-1.136.638-1.807 1.664-1.807 1.025 0 1.66.674 1.66 1.807ZM11.52 6h1.535c.82 0 1.316.55 1.316 1.292 0 .747-.501 1.289-1.321 1.289h-.865V10h-.665V6.001Z"></path>
+                            </svg>    
+                        </button>
+
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary btn-left" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        CONNEXION
+                        </button>
+            
+                        <button type="button" class="btn btn-outline-danger btn-left" id="EJECT" data-toggle="tooltip" data-placement="bottom" title="Eject">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eject-fill" viewBox="0 0 16 16">
+                                <path d="M7.27 1.047a1 1 0 0 1 1.46 0l6.345 6.77c.6.638.146 1.683-.73 1.683H1.656C.78 9.5.326 8.455.926 7.816L7.27 1.047zM.5 11.5a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1v-1z"></path>
+                            </svg>
+                        </button>
+
+                        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+
+                        <div class="offcanvas offcanvas-end text-bg-light" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Menu</h5>
+                                <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            </div>
+
+                            <div class="offcanvas-body">
+                                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href="#">Home</a>
+                                    </li>
+                                    
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">Config</a>
+                                    </li>
+
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Action
+                                        </a>
+
+                                        <ul class="dropdown-menu dropdown-menu-dark">
+                                            <li>
+                                                <a class="dropdown-item" href="#">Ecrire</a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#">RTC</a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#">Calib</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Choisissez le type de connexion</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <button type="button" class="btn btn-primary" id="USB">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-usb-symbol" viewBox="0 0 16 16">
+                                    <path d="m7.792.312-1.533 2.3A.25.25 0 0 0 6.467 3H7.5v7.319a2.5 2.5 0 0 0-.515-.298L5.909 9.56A1.5 1.5 0 0 1 5 8.18v-.266a1.5 1.5 0 1 0-1 0v.266a2.5 2.5 0 0 0 1.515 2.298l1.076.461a1.5 1.5 0 0 1 .888 1.129 2.001 2.001 0 1 0 1.021-.006v-.902a1.5 1.5 0 0 1 .756-1.303l1.484-.848A2.5 2.5 0 0 0 11.995 7h.755a.25.25 0 0 0 .25-.25v-2.5a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25v2.5c0 .138.112.25.25.25h.741a1.5 1.5 0 0 1-.747 1.142L8.76 8.99a2.584 2.584 0 0 0-.26.17V3h1.033a.25.25 0 0 0 .208-.389L8.208.312a.25.25 0 0 0-.416 0Z"></path>
+                                </svg>
+                            USB
+                            </button>
+
+                            <button type="button" class="btn btn-primary" id="BLE">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bluetooth" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="m8.543 3.948 1.316 1.316L8.543 6.58V3.948Zm0 8.104 1.316-1.316L8.543 9.42v2.632Zm-1.41-4.043L4.275 5.133l.827-.827L7.377 6.58V1.128l4.137 4.136L8.787 8.01l2.745 2.745-4.136 4.137V9.42l-2.294 2.274-.827-.827L7.133 8.01ZM7.903 16c3.498 0 5.904-1.655 5.904-8.01 0-6.335-2.406-7.99-5.903-7.99C4.407 0 2 1.655 2 8.01 2 14.344 4.407 16 7.904 16Z"></path>
+                                </svg>
+                            BLE
+                            </button>
+                        </div>
+
+                        <div class="modal-footer">
+                            <!-- Ajoutez ici les toasts -->
+                            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+                                <div id="modal-toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+                                    <div class="toast-header">
+                                        <strong class="me-auto">Notifications</strong>
+                                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                    </div>
+                                    <div class="toast-body" id="modal-toast-body">
+                                        <!-- Le texte du toast sera inséré ici -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </header>
+
+         
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- Nav tabs -->
+                    <ul id="tab-list" class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab"><span class="tab-text">New 1</span>
+                                <!-- Bouton de edit -->
+                                <button id="STYLO" type="button" class="btn btn-outline-primary edit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Bouton suppression -->
+                                <button id="CROIX" type="button" class="btn btn-outline-danger delete-tab">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"></path>
+                                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"></path>
+                                    </svg>
+                                </button>
+                            </a>
+                        </li>    
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div id="tab-content" class="tab-content">
+                        <div class="tab-pane fade show active" id="tab1" role="tabpanel">
+                            <textarea id="code1" name="code" class="form-control" ></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer fixé en bas de la page -->
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <!-- Colonne pour les onglets -->
+                    <div class="col-md-10">
+                        <!-- Contenu principal avec les onglets -->
+                        <ul class="nav nav-tabs nav-fill">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="terminal-tab" data-bs-toggle="tab" href="#repl">REPL</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="repl-tab" data-bs-toggle="tab" href="#terminal">TERMINAL</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-3">
+                            <div class="tab-pane fade show active" id="repl">
+                                <!-- Contenu de l'onglet REPL -->
+                                <textarea id="mixed-editor" placeholder="Contenu Markdown ou Python ici..."></textarea>
+                            </div>
+                            <div class="tab-pane fade " id="terminal">
+                                <!-- Contenu de l'onglet TERMINAL -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Colonne pour les éléments à gauche -->
+                    <div class="col-md-2">
+                        <div class="d-flex flex-column align-items-center">
+                            <!-- Ajoutez vos éléments ici -->
+                            <button id="CTRLA" type="button" class="btn btn-primary mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-keyboard" viewBox="0 0 16 16">
+                                    <path d="M14 5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM2 4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                                    <path d="M13 10.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm0-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-5 0A.25.25 0 0 1 8.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 8 8.75zm2 0a.25.25 0 0 1 .25-.25h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5a.25.25 0 0 1-.25-.25zm1 2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-5-2A.25.25 0 0 1 6.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 6 8.75zm-2 0A.25.25 0 0 1 4.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 4 8.75zm-2 0A.25.25 0 0 1 2.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 2 8.75zm11-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-2 0a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-2 0A.25.25 0 0 1 9.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 9 6.75zm-2 0A.25.25 0 0 1 7.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 7 6.75zm-2 0A.25.25 0 0 1 5.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 5 6.75zm-3 0A.25.25 0 0 1 2.25 6h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5A.25.25 0 0 1 2 6.75zm0 4a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm2 0a.25.25 0 0 1 .25-.25h5.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-5.5a.25.25 0 0 1-.25-.25z"></path>
+                                </svg>
+                                CTRL+A
+                            </button>
+                            <button id="CTRLB" type="button" class="btn btn-primary mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-keyboard" viewBox="0 0 16 16">
+                                    <path d="M14 5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM2 4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                                    <path d="M13 10.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm0-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-5 0A.25.25 0 0 1 8.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 8 8.75zm2 0a.25.25 0 0 1 .25-.25h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5a.25.25 0 0 1-.25-.25zm1 2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-5-2A.25.25 0 0 1 6.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 6 8.75zm-2 0A.25.25 0 0 1 4.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 4 8.75zm-2 0A.25.25 0 0 1 2.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 2 8.75zm11-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-2 0a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-2 0A.25.25 0 0 1 9.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 9 6.75zm-2 0A.25.25 0 0 1 7.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 7 6.75zm-2 0A.25.25 0 0 1 5.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 5 6.75zm-3 0A.25.25 0 0 1 2.25 6h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5A.25.25 0 0 1 2 6.75zm0 4a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm2 0a.25.25 0 0 1 .25-.25h5.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-5.5a.25.25 0 0 1-.25-.25z"></path>
+                                </svg>
+                                CTRL+B
+                            </button>
+                            <button id="CTRLC" type="button" class="btn btn-primary mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-keyboard" viewBox="0 0 16 16">
+                                    <path d="M14 5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM2 4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                                    <path d="M13 10.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm0-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-5 0A.25.25 0 0 1 8.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 8 8.75zm2 0a.25.25 0 0 1 .25-.25h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5a.25.25 0 0 1-.25-.25zm1 2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-5-2A.25.25 0 0 1 6.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 6 8.75zm-2 0A.25.25 0 0 1 4.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 4 8.75zm-2 0A.25.25 0 0 1 2.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 2 8.75zm11-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-2 0a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-2 0A.25.25 0 0 1 9.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 9 6.75zm-2 0A.25.25 0 0 1 7.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 7 6.75zm-2 0A.25.25 0 0 1 5.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 5 6.75zm-3 0A.25.25 0 0 1 2.25 6h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5A.25.25 0 0 1 2 6.75zm0 4a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm2 0a.25.25 0 0 1 .25-.25h5.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-5.5a.25.25 0 0 1-.25-.25z"></path>
+                                </svg>
+                                CTRL+C
+                            </button>
+                            <button id="CTRLD" type="button" class="btn btn-primary mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-keyboard" viewBox="0 0 16 16">
+                                    <path d="M14 5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM2 4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                                    <path d="M13 10.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm0-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-5 0A.25.25 0 0 1 8.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 8 8.75zm2 0a.25.25 0 0 1 .25-.25h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5a.25.25 0 0 1-.25-.25zm1 2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-5-2A.25.25 0 0 1 6.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 6 8.75zm-2 0A.25.25 0 0 1 4.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 4 8.75zm-2 0A.25.25 0 0 1 2.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 2 8.75zm11-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-2 0a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-2 0A.25.25 0 0 1 9.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 9 6.75zm-2 0A.25.25 0 0 1 7.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 7 6.75zm-2 0A.25.25 0 0 1 5.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 5 6.75zm-3 0A.25.25 0 0 1 2.25 6h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5A.25.25 0 0 1 2 6.75zm0 4a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm2 0a.25.25 0 0 1 .25-.25h5.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-5.5a.25.25 0 0 1-.25-.25z"></path>
+                                </svg>
+                                CTRL+D
+                            </button>
+                            <button id="CTRLE" type="button" class="btn btn-primary mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-keyboard" viewBox="0 0 16 16">
+                                    <path d="M14 5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM2 4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                                    <path d="M13 10.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm0-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-5 0A.25.25 0 0 1 8.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 8 8.75zm2 0a.25.25 0 0 1 .25-.25h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5a.25.25 0 0 1-.25-.25zm1 2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-5-2A.25.25 0 0 1 6.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 6 8.75zm-2 0A.25.25 0 0 1 4.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 4 8.75zm-2 0A.25.25 0 0 1 2.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 2 8.75zm11-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-2 0a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm-2 0A.25.25 0 0 1 9.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 9 6.75zm-2 0A.25.25 0 0 1 7.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 7 6.75zm-2 0A.25.25 0 0 1 5.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 5 6.75zm-3 0A.25.25 0 0 1 2.25 6h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5A.25.25 0 0 1 2 6.75zm0 4a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm2 0a.25.25 0 0 1 .25-.25h5.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-5.5a.25.25 0 0 1-.25-.25z"></path>
+                                </svg>
+                                CTRL+E
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+
+        <input type="file" id="file-input" style="display: none;">
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- CodeMirror JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.js"></script>
+        <!-- Python Mode for CodeMirror -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/mode/python/python.min.js"></script>
+
+        <script>
+
+            var type_connection = "";
+            var tabID = 1;
+
+            $(document).ready(function () {
+                // Créer un CodeMirror pour le premier onglet
+                var editor = CodeMirror.fromTextArea(document.getElementById('code1'), {
+                    lineNumbers: true,
+                    mode: "python",
+                    tabSize: 4,
+                    indentUnit: 4,
+                });
+
+
+                $('#NOUVEAU').click(function () {
+                    tabID++;
+
+                    // Cloner le premier onglet
+                    var firstTabContent = $('#tab1').html();
+                    $('#tab-list').append($('<li class="nav-item"><a class="nav-link" id="tab' + tabID + '-tab" data-bs-toggle="tab" href="#tab' + tabID + '" role="tab"><span class="tab-text">New ' + tabID + ' </span><button type="button" class="btn btn-outline-primary edit"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"></path></svg></button><button type="button" class="btn btn-outline-danger delete-tab"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"></path><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"></path></svg></button></a></li>'));
+                    $('#tab-content').append($('<div class="tab-pane fade show active" id="tab' + tabID + '" role="tabpanel"><textarea id="code' + tabID + '" name="code"></textarea></div>'));
+
+                    // Modifier l'ID et le nom du textarea cloné
+                    $('#tab' + tabID + ' textarea').attr('id', 'code' + tabID).attr('name', 'code' + tabID);
+
+                    // Créer un CodeMirror pour le nouvel onglet
+                    var newEditor = CodeMirror.fromTextArea(document.getElementById('code' + tabID), {
+                        lineNumbers: true,
+                        mode: "python",
+                        tabSize: 4,
+                        indentUnit: 4,
+                    });
+
+                    // Activer le nouvel onglet
+                    $('#tab' + tabID + '-tab').tab('show');
+                });
+
+                // Fonction pour supprimer un onglet
+                $('#tab-list').on('click', '.delete-tab', function () {
+                    var tabID = $(this).parents('a').attr('href');
+                    var numTabs = $('#tab-list li').length;
+
+                    // Vérifier s'il reste plus d'un onglet
+                    if (numTabs > 1) {
+                        $(this).parents('li').remove();
+                        $(tabID).remove();
+                    } else {
+                        // S'il ne reste qu'un onglet, ne pas supprimer
+                        showToast('Il doit rester au moins un onglet ', 'warning');
+                    }
+
+                    // Afficher le premier onglet
+                    $('#tab-list a:first').tab('show');
+                });
+
+            });
+
+            // Fonction pour gérer l'édition du nom du Tab
+            $('#tab-list').on('click', '.edit', function () {
+                var tabLink = $(this).closest('a');
+                var tabText = tabLink.find('.tab-text');
+
+                // Rendre le texte éditable
+                tabText.attr('contenteditable', true).focus();
+
+                // Enregistrer le nom du Tab lorsque le focus est perdu
+                tabText.focusout(function () {
+                    var newText = tabText.text();
+                    tabText.removeAttr('contenteditable');
+                    tabText.text(newText);
+
+                    // Empêcher le comportement par défaut du lien
+                    return false;
+                });
+            });
+
+            // Configurer le mode mixte avec Python et Markdown
+            var mixedEditor = CodeMirror.fromTextArea(document.getElementById("mixed-editor"), {
+                lineNumbers: true,
+                theme: "default",
+                mode: "python",
+                electricChars: true,
+                tabSize:0,
+                indentUnit:0,
+                indentWithTabs: false,  // Désactive l'utilisation de tabulations pour l'indentation
+                lineWrapping: true,
+                foldGutter: true,
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                height: "200px", // Ajustez la hauteur comme vous le souhaitez
+                width: "100%",
+                newlineAndIndent: true,
+            });
+
+            
+            var currentLine = "";
+            var cleanLine ="";
+
+            mixedEditor.on('beforeChange', (editor, change) => {
+                
+                    const currentLineNumber = mixedEditor.getCursor().line;
+                    const currentLine = mixedEditor.getLine(currentLineNumber);
+
+                    // Vérifiez si la ligne actuelle commence par ">>> " ou "..."
+                    if (currentLine.startsWith('>>> ') || currentLine.startsWith('... ')) {
+                        // Empêchez tout changement qui tente de placer le curseur sur les préfixes
+                        if (
+                            (change.from.line === currentLineNumber && change.from.ch < 4) ||
+                            (change.to.line === currentLineNumber && change.to.ch < 4)
+                        ) {
+                            change.cancel();
+                        }
+                    }
+            });
+
+
+            mixedEditor.on('keydown', (editor, event) => {
+
+                if (type_connection === "USB") {
+                    const keyPressed = event.key;
+
+                    // Récupérez la ligne actuelle
+                    const currentLineNumber = mixedEditor.getCursor().line;
+                    currentLine = mixedEditor.getLine(currentLineNumber);
+
+                    // Vérifiez si la ligne actuelle commence par ">>> " ou "..."
+                    if (currentLine.startsWith('>>> ') || currentLine.includes('... ')) {
+                        // Affichez le numéro de la ligne et la position du curseur dans la console
+                        //console.log(`Line Number: ${currentLineNumber + 1}, Cursor Position: ${mixedEditor.getCursor().ch}`);
+
+                        // Gérez l'événement seulement si la touche appuyée est "Enter"
+                        if (keyPressed === 'Enter') {
+                            // Retirez les préfixes ">>> " ou "..." de la ligne courante et les espaces/tabulations après
+                            cleanLine = currentLine.replace(/>>> |... [ \t]*/, '');
+                            //cleanLine = currentLine.replace(/>>> |... /, '');
+
+                            // Affichez les caractères de la ligne courante sans les préfixes et les espaces/tabulations après
+                            console.log('ligne courante:', cleanLine);
+                            send = currentLine.substring(4);
+        
+                            // Appelez votre fonction sendTextData avec le texte de la ligne courante
+                            sendTextData(cleanLine);
+
+                        }
+                    }
+                }
+
+                if (type_connection === "BLE") {
+                    const keyPressed = event.key;
+
+                    // Récupérez la ligne actuelle
+                    const currentLineNumber = mixedEditor.getCursor().line;
+                    currentLine = mixedEditor.getLine(currentLineNumber);
+
+                    // Vérifiez si la ligne actuelle commence par ">>> " ou "..."
+                    if (currentLine.startsWith('>>> ') || currentLine.includes('... ')) {
+                        // Affichez le numéro de la ligne et la position du curseur dans la console
+                        //console.log(`Line Number: ${currentLineNumber + 1}, Cursor Position: ${mixedEditor.getCursor().ch}`);
+
+                        // Gérez l'événement seulement si la touche appuyée est "Enter"
+                        if (keyPressed === 'Enter') {
+                            // Retirez les préfixes ">>> " ou "..." de la ligne courante et les espaces/tabulations après
+                            cleanLine = currentLine.replace(/>>> |... [ \t]*/, '');
+                            //cleanLine = currentLine.replace(/>>> |... /, '');
+
+                            // Affichez les caractères de la ligne courante sans les préfixes et les espaces/tabulations après
+                            console.log('ligne courante:', cleanLine);
+                            send = currentLine.substring(4);
+        
+                            // Appelez votre fonction sendTextData avec le texte de la ligne courante
+                            //sendTextData(cleanLine);
+                            console.log(cleanLine);
+                            writeToCharacteristic(cleanLine);
+
+                        }
+                    }
+                
+                }
+            });
+
+            // Lorsque le bouton "SAVE" est cliqué
+            document.getElementById('SAVE').addEventListener('click', function() {
+                // Récupérer l'index de l'onglet actif
+                var activeTab = document.querySelector('#tab-list .nav-link.active');             
+                var activeTabName = activeTab.innerText.trim(); // Nom du tab actif
+
+
+                // Récupérer le contenu du CodeMirror actif
+                var codeMirrorContent = document.querySelector('#tab-content .tab-pane.active .CodeMirror').CodeMirror.getValue();
+
+                // Créer un nouveau blob contenant le contenu
+                var blob = new Blob([codeMirrorContent], { type: 'text/plain' });
+
+                // Créer un objet URL pour le blob
+                var url = URL.createObjectURL(blob);
+
+                // Créer un élément <a> pour télécharger le fichier
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = activeTabName; // Nom du fichier à télécharger avec le nom du tab
+                document.body.appendChild(a);
+
+                // Cliquer sur l'élément <a> pour déclencher le téléchargement
+                a.click();
+
+                // Nettoyer l'URL de l'objet
+                URL.revokeObjectURL(url);
+            });
+
+            // Lorsque le bouton "Ouvrir un fichier" est cliqué
+                document.getElementById('OPEN').addEventListener('click', function() {
+            // Cliquer sur le champ de fichier caché lors du clic sur le bouton "Ouvrir un fichier"
+                document.getElementById('file-input').click();
+            });
+
+            // Lorsqu'un fichier est sélectionné
+            document.getElementById('file-input').addEventListener('change', function(event) {
+                var file = event.target.files[0]; // Récupérer le premier fichier sélectionné
+
+                // Créer un objet FileReader pour lire le contenu du fichier
+                var reader = new FileReader();
+
+                // Lorsque la lecture du fichier est terminée
+                reader.onload = function(event) {
+                    var content = event.target.result; // Contenu du fichier
+
+                    // Récupérer l'index de l'onglet actif
+                    var activeTab = document.querySelector('#tab-list .nav-link.active');
+
+                    // Mettre à jour le contenu du CodeMirror actif avec le contenu du fichier
+                    var codeMirrorInstance = document.querySelector('#tab-content .tab-pane.active .CodeMirror').CodeMirror;
+                    codeMirrorInstance.setValue(content);
+                };
+
+                // Lire le contenu du fichier en tant que texte
+                reader.readAsText(file);
+            });
+
+            // Filtre pour le VID et PID spécifiés
+            const filters = [
+            { vendorId: 0x2E8A, productId: 0x0005 }
+            ];
+
+            var device;
+            var interfaceNumber = 2;
+            var endpointNumber = 5;
+            var isDisconnected = false;
+            var intervalDuration = 50;
+            var textreceive =""
+
+            // Fonction pour ce connecter en mode USB
+            async function connectToDevice() {
+                type_connection = "USB";
+
+                hideModal();
+
+                try {
+                    device = await navigator.usb.requestDevice({ filters: [{ filters: filters }] });
+                    await device.open();
+                    await device.selectConfiguration(1);           
+                    await device.claimInterface(interfaceNumber); 
+                    await device.controlTransferOut({
+                        'requestType': 'class',
+                        'recipient': 'interface',
+                        'request': 0x22,
+                        'value': 0x01,
+                        'index': 2
+                    });
+                    
+                    document.getElementById('NOUVEAU').disabled = false;
+                    document.getElementById('OPEN').disabled = false;
+                    document.getElementById('SAVE').disabled = false;
+                    document.getElementById('RUN').disabled = false;
+                    document.getElementById('STOP').disabled = false;
+                    document.getElementById('STOP').disabled = false;
+                    document.getElementById('EJECT').disabled = false;
+                    document.getElementById('STYLO').disabled = false;
+                    document.getElementById('CROIX').disabled = false;
+                    document.getElementById('CTRLA').disabled = false;
+                    document.getElementById('CTRLB').disabled = false;
+                    document.getElementById('CTRLC').disabled = false;
+                    document.getElementById('CTRLD').disabled = false;
+                    document.getElementById('CTRLE').disabled = false;
+
+                    intervalId = transferInWithInterval();
+                    
+                    showToast('Connected ', 'success');
+                    
+                } catch (error) {
+                    // Gérez ici les erreurs de connexion
+                    console.error('Erreur de connexion au périphérique :', error);
+                    showToast('Erreur de connexion au périphérique :' + error, 'danger');
+                }
+
+            }
+
+            // Fonction pour arrêter la boucle setInterval
+            async function stopInterval() {
+                isDisconnected = true;
+            }
+
+            // Fonction pour se déconnecter
+            async function disconnectDevice() {
+
+                if (type_connection === "USB") {
+
+                    try {
+                        await device.controlTransferOut({
+                            requestType: 'class',
+                            recipient: 'interface',
+                            request: 0x22,
+                            value: 0x00,
+                            index: 2
+                        });
+
+                        await device.close();
+                        showToast('Aucun périphérique connecté.', 'danger');
+                    } catch (error) {
+                        showToast('Erreur lors de la déconnexion :'+ error, 'danger');
+                    }
+                }
+  
+                if (type_connection === "BLE") {
+                    try {
+                        if (device_ble && device_ble.gatt.connected) {
+                            await device_ble.gatt.disconnect();
+                            showToast('Déconnecté du périphérique.', 'danger');
+                            console.log('Déconnecté du périphérique.');
+                        } else {
+                            console.log('Aucun périphérique connecté.');
+                            showToast('Aucun périphérique connecté.', 'danger');
+                        }
+                    } catch (error) {
+                        console.log('Erreur lors de la déconnexion: ' + error);
+                        showToast('Erreur lors de la déconnexion: ' + error, 'danger');
+                    }
+                }
+                mixedEditor.setValue(''); // Efface le contenu de mixedEditor
+                document.getElementById('NOUVEAU').disabled = true;
+                document.getElementById('OPEN').disabled = true;
+                document.getElementById('SAVE').disabled = true;
+                document.getElementById('RUN').disabled = true;
+                document.getElementById('STOP').disabled = true;
+                document.getElementById('STOP').disabled = true;
+                document.getElementById('EJECT').disabled = true;
+                document.getElementById('STYLO').disabled = true;
+                document.getElementById('CROIX').disabled = true;
+                document.getElementById('CTRLA').disabled = true;
+                document.getElementById('CTRLB').disabled = true;
+                document.getElementById('CTRLC').disabled = true;
+                document.getElementById('CTRLD').disabled = true;
+                document.getElementById('CTRLE').disabled = true;
+                    
+            }
+
+            
+
+            // Fonction pour faire un soft_reset equivalent à Ctrl-C
+            async function stopTransfer() {
+
+                if (type_connection === "USB") {
+                    try {
+                        sendToucheSpeciale(3);
+
+                    } catch (error) {
+                        // Gérez ici les erreurs d'envoi
+                        console.error('Erreur d\'envoi de la commande d\'arrêt :', error);
+                    }
+                }
+
+                if (type_connection === "BLE") {
+                    try {
+                        if (!writeCharacteristic) {
+                            console.log('Caractéristique d\'écriture non trouvée. Veuillez vous connecter d\'abord.');
+                            return;
+                        }
+                        sendToucheSpeciale(3);
+                    
+                    } catch (error) {
+                        console.log('Erreur lors de l\'écriture des données: ' + error);
+                    }
+                }
+            }
+
+
+            // Fonction pour envoyer une touche speciale
+            async function sendToucheSpeciale(key) {
+
+                if (type_connection === "USB") {
+                    try {
+                        // Valeur ASCII de Ctrl + E
+                        const hexValue = key;
+
+                        // Convertir la valeur ASCII en tableau d'octets
+                        const data = new Uint8Array([hexValue]);
+
+                        // Envoyer les données au périphérique
+                        await device.transferOut(endpointNumber, data);
+
+                        // Ajoutez ici le code à exécuter après l'envoi des données (si nécessaire).
+                    } catch (error) {
+                        // Gérez ici les erreurs d'envoi
+                        console.error('Erreur d\'envoi de données hexadécimales :', error);
+                    }
+                }
+
+                if (type_connection === "BLE") {
+                    try {
+                        const hexValue = key;
+
+                        // Convertir la valeur ASCII en tableau d'octets
+                        const data = new Uint8Array([hexValue]);
+                        // Envoyer les données au périphérique
+                        await writeCharacteristic.writeValue(data);
+                    } catch (error) {
+                        // Gérez ici les erreurs d'envoi
+                        console.error('Erreur d\'envoi de données hexadécimales :', error);
+                    }
+                }
+            };
+
+
+            // Fonction pour envoyer du texte se terminant par '\r'
+            async function sendTextData(text) {
+                try {
+                    //const text = codeRepl;
+                    const data = new TextEncoder().encode(text + '\r\n');
+                    await device.transferOut(endpointNumber, data);
+
+                    // Ajoutez ici le code à exécuter après l'envoi des données (si nécessaire).
+                } catch (error) {
+                    // Gérez ici les erreurs d'envoi
+                    console.error('Erreur d\'envoi de données :', error);
+                }
+            }
+
+
+            // Fonction pour envoyer tout le code python
+            async function sendCodePython() {
+                // Récupérer l'index de l'onglet actif
+                var activeTab = document.querySelector('#tab-list .nav-link.active');             
+
+                // Récupérer le contenu du CodeMirror actif
+                var codeMirrorContent = document.querySelector('#tab-content .tab-pane.active .CodeMirror').CodeMirror.getValue();
+
+                if (type_connection === "USB") {
+                    try {
+                        sendToucheSpeciale(0x05);
+
+                    } catch (error) {
+                        // Gérez ici les erreurs d'envoi
+                        console.error('Erreur d\'envoi de données hexadécimales :', error);
+                    }
+
+                    try {
+                        const text = codeMirrorContent;
+                        const data = new TextEncoder().encode(text + '\r\n');
+                        await device.transferOut(endpointNumber, data);
+
+                        // Ajoutez ici le code à exécuter après l'envoi des données (si nécessaire).
+                    } catch (error) {
+                        // Gérez ici les erreurs d'envoi
+                        console.error('Erreur d\'envoi de données :', error);
+                    }
+
+                    try {                       
+                        sendToucheSpeciale(0x04);
+
+                    } catch (error) {
+                        // Gérez ici les erreurs d'envoi
+                        console.error('Erreur d\'envoi de données hexadécimales :', error);
+                    }
+                }
+
+                if (type_connection === "BLE") {
+                    try {
+                        // Étape 1 : Envoyer 0x05
+                        const dataStart = new Uint8Array([0x05]);
+                        await writeCharacteristic.writeValue(dataStart);
+                        
+                        console.log('0x05 envoyé avec succès.');
+                    } catch (error) {
+                        // Gérez ici les erreurs d'envoi
+                        console.error('Erreur d\'envoi de données hexadécimales :', error);
+                    }
+                        
+                    try {
+                        // Étape 2 : Envoyer le texte provenant de CodeMirror
+                        const text = codeMirrorContent; // Supposons que codeMirrorContent contient le texte à envoyer
+                        await writeToCharacteristic(text);
+                    } catch (error) {
+                        // Gérez ici les erreurs d'envoi
+                        console.error('Erreur d\'envoi de données :', error);
+                    }
+
+                    try {
+                        // Étape 3 : Envoyer 0x04
+                        const dataEnd = new Uint8Array([0x04]);
+                        await writeCharacteristic.writeValue(dataEnd);
+                        
+                        console.log('0x04 envoyé avec succès.');
+                    } catch (error) {
+                        console.log('Erreur lors de l\'écriture des données: ' + error);
+                    }   
+                }
+            }
+
+            // Déclarez une variable globale pour stocker les morceaux de texte reçus
+            let accumulatedText = '';
+            // Transfert IN avec un buffer de 64 en boucle
+            async function transferInWithInterval() {
+                let intervalId;
+
+                intervalId = setInterval(async () => {
+                    if (isDisconnected || !device.opened) {
+                        clearInterval(intervalId); // Arrêtez l'intervalle si la déconnexion a eu lieu ou le périphérique n'est pas ouvert
+                        console.log("interval interrompu")
+                        return;
+                    }
+
+                    try {
+                        receiveDataFromDevice();                        
+                
+                    } catch (error) {
+                        // Gérer l'erreur liée à la déconnexion ou à d'autres problèmes de transfert
+                        console.error('Erreur de transfert USB:', error.message);
+                        if (error.code === DOMException.NOT_FOUND_ERR) {
+                            // Le périphérique n'est probablement plus connecté, vous pouvez gérer la déconnexion ici
+                            await device.close();
+                            await device.forget();
+                        }
+                        clearInterval(intervalId);
+                    }
+                    // Réinitialisez la variable accumulée
+                    
+                }, intervalDuration);
+            }
+            
+            // Déclarez une variable pour stocker les données reçues
+            let receivedData = '';
+
+            // Déclarez une constante pour définir le timeout en millisecondes
+            const TIMEOUT_DURATION = 150; // 150 milliseconde
+
+            // ID du timeout
+            let timeoutId;
+
+            // Fonction pour traiter les données reçues
+            function processData(data) {
+                // Traitement des données ici...
+                console.log('Données reçues :', data);
+
+                
+                if (data.includes(cleanLine)){
+                    // Si cleanLine est inclus, remplace cleanLine par une chaîne vide dans data
+                    data = data.replace(cleanLine+'\r\n', '');     
+                }
+
+                // Vérifiez si la chaîne contient la chaîne cleanLine
+                if (data.startsWith(">>> ")) {
+                    // Supprimez la chaîne cleanLine de la chaîne data
+                    mixedEditor.replaceSelection('\r\n'+">>> " );
+                    return;
+                }
+
+                mixedEditor.replaceSelection(data);
+
+            }
+
+            // Fonction pour détecter la fin du message après un certain délai d'inactivité
+            function handleTimeout() {
+                console.log('Timeout : Fin du message détectée');
+                processData(receivedData); // Traitez les données reçues
+                receivedData = ''; // Réinitialisez les données reçues pour le prochain message
+            }
+
+            var result;
+
+            async function receiveDataFromDevice() {
+                try {
+                    // Vérifiez si le périphérique est ouvert avant de lire les données
+                    if (!device.opened) {
+                        console.log('Périphérique USB déconnecté. Arrêt de la réception des données.');
+                        return;
+                    }
+
+                    
+
+                    // Attendre que le statut soit "ok" avant de poursuivre
+                     do {
+                        result = await device.transferIn(endpointNumber, 64);
+                    } while (result.status !== "ok"); 
+
+                    // Convertir les données reçues en chaîne de caractères
+                    const decoder = new TextDecoder();
+                    const data = decoder.decode(result.data);
+
+                    receivedData += data; // Ajoutez les données reçues au tampon
+
+                    // Réinitialisez le timeout à chaque fois que des données sont reçues
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(handleTimeout, TIMEOUT_DURATION);
+                } catch (error) {
+                    // Gérer l'erreur de transfert
+                    console.error('Erreur de transfert USB:', error.message);
+                    clearTimeout(timeoutId); // Arrêtez le timeout en cas d'erreur
+                }
+            }
+
+
+            function hideModal() {
+                var exampleModal = document.getElementById('exampleModal'); // Récupérer le modal avec son ID
+
+                if (exampleModal) {
+                    $(exampleModal).modal('hide'); // Masquer le modal en utilisant jQuery
+                } else {
+                    console.error("Le modal n'a pas été trouvé.");
+                }
+            }
+
+            // ************************************** BLE connect *********************************************
+
+            let device_ble;
+            let server;
+            let writeCharacteristic;
+            let readCharacteristic;
+            const receivedDataArray = [];
+
+            // Fonction pour se connecter à un périphérique Bluetooth
+            async function connectTodevice_ble() {
+
+                type_connection = "BLE";
+
+                try {
+                    hideModal();
+                    const filters = {
+                        filters: [
+                            { name: 'mpy-repl' } // Filtrer par nom du périphérique
+                        ],
+                        optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e']
+                        
+                    };
+                    //writeToModalFooter('Recherche des périphériques Bluetooth...\r');
+                    showToast('Recherche des périphériques Bluetooth...\r', 'primary');
+                    
+                    device_ble = await navigator.bluetooth.requestDevice(filters);
+
+                    showToast('Périphérique Bluetooth trouvé: ' + device_ble.name, 'success');
+
+                    showToast('Tentative de connexion au périphérique...\r', 'primary');
+
+                    server = await device_ble.gatt.connect();
+                    showToast('Connecté au serveur GATT. Attente caracteristique\r', 'success');
+
+                    // Récupérer la caractéristique à écrire (remplacez 'write_characteristic_uuid' par l'UUID de la caractéristique à écrire)
+                    writeCharacteristic = await server.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e')
+                        .then(service => service.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e'));
+
+                    showToast('Caractéristique pour l\'écriture prête.\r', 'success');
+
+                    // Récupérer la caractéristique NOTIFY (remplacez 'read_characteristic_uuid' par l'UUID de la caractéristique NOTIFY à lire)
+                    readCharacteristic = await server.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e')
+                        .then(service => service.getCharacteristic('6e400003-b5a3-f393-e0a9-e50e24dcca9e'));
+
+                    showToast('Caractéristique pour la lecture prête.\r', 'success');
+
+                    // Établir une écoute sur la caractéristique NOTIFY
+                    readCharacteristic.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged);
+                    await readCharacteristic.startNotifications();
+
+                    mixedEditor.replaceSelection(">>> ");
+
+                    document.getElementById('NOUVEAU').disabled = false;
+                    document.getElementById('OPEN').disabled = false;
+                    document.getElementById('SAVE').disabled = false;
+                    document.getElementById('RUN').disabled = false;
+                    document.getElementById('STOP').disabled = false;
+                    document.getElementById('STOP').disabled = false;
+                    document.getElementById('EJECT').disabled = false;
+                    document.getElementById('STYLO').disabled = false;
+                    document.getElementById('CROIX').disabled = false;
+                    document.getElementById('CTRLA').disabled = false;
+                    document.getElementById('CTRLB').disabled = false;
+                    document.getElementById('CTRLC').disabled = false;
+                    document.getElementById('CTRLD').disabled = false;
+                    document.getElementById('CTRLE').disabled = false;
+                    
+
+                } catch (error) {
+                    showToast('Erreur lors de la connexion au périphérique: ' + error, 'danger');
+                }
+            }
+
+            function showToast(message, type) {
+            // Créer un nouvel élément pour le toast
+            const toastContainer = document.createElement('div');
+            toastContainer.classList.add('position-fixed', 'bottom-0', 'end-0', 'p-3', 'z-index-11');
+
+            const toastElement = document.createElement('div');
+            toastElement.classList.add('toast', 'hide');
+            toastElement.setAttribute('role', 'alert');
+            toastElement.setAttribute('aria-live', 'assertive');
+            toastElement.setAttribute('aria-atomic', 'true');
+
+            // Ajouter la classe correspondante au type d'alerte
+            switch (type) {
+                case 'success':
+                    toastElement.classList.add('bg-success', 'text-white');
+                    break;
+                case 'danger':
+                    toastElement.classList.add('bg-danger', 'text-white');
+                    break;
+                case 'primary':
+                    toastElement.classList.add('bg-primary', 'text-white');
+                    break;
+                case 'warning':
+                    toastElement.classList.add('bg-warning', 'text-white');
+                    break;
+                default:
+                    toastElement.classList.add('bg-primary', 'text-white'); // Par défaut, utilisez la classe bg-primary
+            }
+
+            // Texte fixe dans le header du toast
+            const headerText = 'Notifications'; // Remplacez par le texte fixe de votre choix
+
+            toastElement.innerHTML = `
+                <div class="toast-header">
+                    <strong class="me-auto">${headerText}</strong> <!-- Utilisez le texte fixe ici -->
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            `;
+
+            // Ajouter le toast au container du toast
+            toastContainer.appendChild(toastElement);
+
+            // Ajouter le container du toast au body du document
+            document.body.appendChild(toastContainer);
+
+            // Afficher le toast
+            const bsToast = new bootstrap.Toast(toastElement, { autohide: true, delay: 3000 }); // Optionnel : définir le délai de fermeture automatique
+            bsToast.show();
+
+            // Supprimer le toast une fois qu'il est masqué
+            toastElement.addEventListener('hidden.bs.toast', function () {
+                document.body.removeChild(toastContainer);
+            });
+        }
+
+
+            // Fonction pour gérer les notifications lorsque la valeur de la caractéristique NOTIFY change
+            function handleCharacteristicValueChanged(event) {
+                const value = event.target.value;
+                // Décodez les données DataView en tant que chaîne de caractères
+                var dataString = new TextDecoder().decode(value.buffer);
+
+                // Affichez la chaîne de caractères (données en mode texte) dans la console
+                console.log('Données reçues en mode texte :', dataString);
+
+                // Vérifiez si la chaîne contient la chaîne cleanLine
+                if (dataString.includes(cleanLine)) {
+                    // Supprimez la chaîne cleanLine de la chaîne dataString
+                    dataString = dataString.replace(cleanLine+'\r\n', '');
+                }
+
+                // Vérifiez si la chaîne contient la chaîne cleanLine
+                if (dataString.startsWith(">>> ")) {
+                    // Supprimez la chaîne cleanLine de la chaîne dataString
+                    mixedEditor.replaceSelection('\r\n' + ">>> ");
+                    return;
+                }
+
+                // Afficher le résultat dans votre éditeur de texte ou où vous le souhaitez
+                mixedEditor.replaceSelection(dataString);
+            }
+
+
+            // Fonction pour écrire du texte sur la caractéristique
+            async function writeToCharacteristic(dataToWrite) {
+                try {
+                    if (!writeCharacteristic) {
+                        console.log('Caractéristique d\'écriture non trouvée. Veuillez vous connecter d\'abord.');
+                        return;
+                    }
+
+                    // Convertir le texte en tableau d'octets (bytes) UTF-8
+                    const encoder = new TextEncoder();
+                    const encodedText = encoder.encode(dataToWrite);
+
+                    // Créer un tableau d'octets (bytes) contenant \r\n
+                    const newlineBytes = encoder.encode('\r\n');
+
+                    // Concaténer les tableaux d'octets (bytes)
+                    const dataToSend = new Uint8Array(encodedText.length + newlineBytes.length);
+                    dataToSend.set(encodedText);
+                    dataToSend.set(newlineBytes, encodedText.length);
+
+                    // Appel à la fonction interne pour envoyer les données réelles à la caractéristique
+                    await sendToCharacteristic(dataToSend);
+                    console.log('Texte écrit avec succès.');
+                } catch (error) {
+                    console.log('Erreur lors de l\'écriture du texte: ' + error);
+                }
+            }
+
+            // Fonction interne pour envoyer les données à la caractéristique
+            async function sendToCharacteristic(data) {
+                await writeCharacteristic.writeValue(data);
+            }
+
+            document.getElementById('NOUVEAU').disabled = true;
+            document.getElementById('OPEN').disabled = true;
+            document.getElementById('SAVE').disabled = true;
+            document.getElementById('RUN').disabled = true;
+            document.getElementById('STOP').disabled = true;
+            document.getElementById('STOP').disabled = true;
+            document.getElementById('EJECT').disabled = true;
+            document.getElementById('STYLO').disabled = true;
+            document.getElementById('CROIX').disabled = true;
+            document.getElementById('CTRLA').disabled = true;
+            document.getElementById('CTRLB').disabled = true;
+            document.getElementById('CTRLC').disabled = true;
+            document.getElementById('CTRLD').disabled = true;
+            document.getElementById('CTRLE').disabled = true;
+            
+
+
+            document.getElementById('RUN').addEventListener('click', sendCodePython);
+            document.getElementById('STOP').addEventListener('click', stopTransfer);
+            document.getElementById('USB').addEventListener('click', connectToDevice);
+            document.getElementById('BLE').addEventListener('click', connectTodevice_ble);
+            document.getElementById('EJECT').addEventListener('click', disconnectDevice);
+            document.getElementById('CTRLA').addEventListener('click', function() {
+                sendToucheSpeciale(0x01);
+            });
+            document.getElementById('CTRLB').addEventListener('click', function() {
+                sendToucheSpeciale(0x02);
+            });
+            document.getElementById('CTRLC').addEventListener('click', function() {
+                sendToucheSpeciale(0x03);
+            });
+            document.getElementById('CTRLD').addEventListener('click', function() {
+                sendToucheSpeciale(0x04);
+            });
+            document.getElementById('CTRLE').addEventListener('click', function() {
+                sendToucheSpeciale(0x05);
+            });
+
+
+
+            
+        </script>
+
+        <script type="py" terminal worker target="#terminal">
+
+            from pyscript import window, document
+
+            term = document.querySelector('script[terminal]').terminal
+            term.resize(40, 18) 
+            
+            import code
+            code.interact(local=globals())
+        </script>
+    
+    </body>
+</html>
