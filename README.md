@@ -10,14 +10,16 @@ MPYEditor is a MicroPython editor that implements the following APIs:
 
 <u>To use it, you will need:</u>
 
-<div style="display: flex; justify-content: space-between; align-items: center; max-width: 500px;">
-    <img src="image.png" alt="pico" width="150" height="150" />
-    <img src="image-6.png" alt="plus" width="70" height="70" />
-    <a href="votre_lien.html"><img src="tempsnip-1.png" alt="firmware" width="100" height="100" /></a>
-</div>
-<br>
+![img](https://github.com/patfrench/patfrench.github.io/assets/44723412/77e9bccf-22b5-4787-a4fd-cf188a700c7c)
 
-Un RPi PICO ou PICO W si vous voulez le bluetooth, et le firmware [UF2 (cliquez pour télécharger)](lien_vers_le_firmware_uf2).
-
+A RPi PICO or PICO W if you want Bluetooth, and the firmware [UF2 (cliquez pour télécharger)](lien_vers_le_firmware_uf2).
+***
+***
 ## Mode WebUSB
+![usb1](https://github.com/patfrench/patfrench.github.io/assets/44723412/0ffb38cc-9555-44ed-87e4-eaa89a42d00a)
+![usb2](https://github.com/patfrench/patfrench.github.io/assets/44723412/43f24231-2dc1-43c4-a038-c5226fee837c)
+![usb3](https://github.com/patfrench/patfrench.github.io/assets/44723412/42666fe9-a9a3-4156-bc1d-8d4acce98028)
 
+***
+***
+## Mode WebBLUETOOTH
