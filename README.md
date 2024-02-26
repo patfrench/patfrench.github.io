@@ -13,6 +13,8 @@ MPYEditor is a MicroPython editor that implements the following APIs:
 ![img](https://github.com/patfrench/patfrench.github.io/assets/44723412/77e9bccf-22b5-4787-a4fd-cf188a700c7c)
 
 A RPi PICO or PICO W if you want Bluetooth, and the firmware [UF2 (cliquez pour télécharger)](lien_vers_le_firmware_uf2).
+
+With these APIs, your browser will have access to the hardware.
 ***
 ***
 ## Mode WebUSB
@@ -37,3 +39,14 @@ You will get this prompt :
 ![ble1](https://github.com/patfrench/patfrench.github.io/assets/44723412/baf5cd9b-99ac-47cf-b84c-99eadaaf3bec)
 ![ble2](https://github.com/patfrench/patfrench.github.io/assets/44723412/8a761ed5-df8f-4022-a843-b64229e67df8)
 ![ble3](https://github.com/patfrench/patfrench.github.io/assets/44723412/a91da516-dcb8-4744-a2e9-edbb25464125)
+
+***
+***
+## TODO
+- [ ] English comment
+- [ ] Add interaction with the PyScript terminal
+- [ ] Create new pages in the top right menu
+- [ ] Add Bokeh graphs for ADC readings
+
+
+
