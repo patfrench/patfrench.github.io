@@ -43,6 +43,13 @@ You will get this prompt :
 
 ***
 ***
+## Compatibilty
+![browser ble](https://github.com/patfrench/patfrench.github.io/assets/44723412/54e9e3be-3285-428a-8eee-eb95678944b8)
+
+![browser usb](https://github.com/patfrench/patfrench.github.io/assets/44723412/6a18f52f-981b-4dd9-9ea4-689f57301426)
+
+***
+***
 ## TODO
 - [ ] English comment
 - [ ] Add interaction with the PyScript terminal
