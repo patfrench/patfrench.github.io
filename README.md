@@ -12,7 +12,7 @@ MPYEditor is a MicroPython editor that implements the following APIs:
 
 ![img](https://github.com/patfrench/patfrench.github.io/assets/44723412/77e9bccf-22b5-4787-a4fd-cf188a700c7c)
 
-A [RPi PICO (cliquez pour télécharger)](lien_vers_le_firmware_uf2) or [RPi PICO W (cliquez pour télécharger)](lien_vers_le_firmware_uf2) if you want Bluetooth
+A [RPi PICO (cliquez pour télécharger)](https://github.com/patfrench/patfrench.github.io/blob/main/firmware%20RP2_PICO/firmware.uf2) or [RPi PICO W (cliquez pour télécharger)](lien_vers_le_firmware_uf2) if you want Bluetooth
 With these APIs, your browser will have access to the hardware.
 ***
 ***
