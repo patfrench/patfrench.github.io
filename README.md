@@ -14,6 +14,8 @@ MPYEditor is a MicroPython editor that implements the following APIs:
 
 A [RPi PICO (cliquez pour télécharger)](https://github.com/patfrench/patfrench.github.io/blob/main/firmware%20RP2_PICO/) or [RPi PICO W (cliquez pour télécharger)](https://github.com/patfrench/patfrench.github.io/blob/main/firmware%20RP2_PICO_W/) if you want Bluetooth
 With these APIs, your browser will have access to the hardware.
+
+To flash your board, you need to hold down the 'BOOTSEL' button and connect the USB port. A mass storage device will be created, and you will need to copy and paste the firmware.uf2 into it.
 ***
 ***
 ## Mode WebUSB
