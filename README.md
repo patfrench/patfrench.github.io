@@ -16,6 +16,8 @@ A [RPi PICO (cliquez pour télécharger)](https://github.com/patfrench/patfrench
 With these APIs, your browser will have access to the hardware.
 
 To flash your board, you need to hold down the 'BOOTSEL' button and connect the USB port. A mass storage device will be created, and you will need to copy and paste the firmware.uf2 into it.
+
+Regarding the REPL and indentations, you will need to press ENTER multiple times instead of BACKSPACE (each ENTER will act as a BACKSPACE).
 ***
 ***
 ## Mode WebUSB
@@ -55,6 +57,7 @@ You will get this prompt :
 - [ ] Add interaction with the PyScript terminal
 - [ ] Create new pages in the top right menu
 - [ ] Add Bokeh graphs for ADC readings
+- [ ] Change PASTE MODE to RAW PASTE
 
 
 
